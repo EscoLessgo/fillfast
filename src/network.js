@@ -4,7 +4,9 @@ import { io } from "socket.io-client";
 // For local Dev, it's localhost:3000
 // Users will need to tunnel this if running essentially "serverless" on Discord Activity Proxy,
 // but usually Discord Activities use a dedicated backend.
-const SERVER_URL = "http://localhost:3001";
+// In production, this URL should be your deployed server URL.
+// IMPORTANT: For Discord Activities, this MUST be https (wss).
+const SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || "http://localhost:3001";
 
 export class NetworkManager {
     constructor(onEvent) {

@@ -1,4 +1,10 @@
 
+### Production URLs for Discord Developer Portal
+When configuring your app in the Discord Developer Portal, use these exact URLs:
+
+*   **Privacy Policy URL:** `https://dnboxes.velarixsolutions.nl/privacy.html`
+*   **Terms of Service URL:** `https://dnboxes.velarixsolutions.nl/terms.html`
+
 ### How to Enable Real Usernames
 
 To display actual Discord usernames instead of "Guest Player", the game needs to perform a secure "Token Exchange" with a backend server. **However**, you can enable a simpler "Client-Only" mode for your deployed app if you configure the Discord Developer Portal correctly.
@@ -6,7 +12,7 @@ To display actual Discord usernames instead of "Guest Player", the game needs to
 1.  **Open your project in the Discord Developer Portal.**
 2.  **Go to `OAuth2` settings.**
 3.  **Add the Redirect**:
-    *   Add your production URL (e.g., `https://your-game.vercel.app` or similar) to the Redirects list.
+    *   Add your production URL: `https://dnboxes.velarixsolutions.nl`
     *   Also ensure `http://localhost:5173` is there for local testing.
 4.  **Set Your Client ID**:
     *   Create a file named `.env` in the root of your project folder.
