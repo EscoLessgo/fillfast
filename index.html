@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/javascript.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dots & Boxes (Discord)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div id="background-anim"></div>
+  <div id="app">
+
+    <!-- LOBBY SCREEN -->
+    <div id="lobby-screen" class="screen">
+      <div class="logo-large">
+        <h1>DOTS & BOXES</h1>
+      </div>
+
+      <div class="lobby-controls">
+        <div class="user-profile">
+          <div id="my-avatar" class="avatar"></div>
+          <span id="my-username">Loading...</span>
+        </div>
+
+        <button id="btn-create" class="btn-primary">CREATE ROOM</button>
+
+        <div class="room-browser">
+          <h3>AVAILABLE ROOMS</h3>
+          <ul id="room-list">
+            <li class="empty-msg">Scanning for games...</li>
+          </ul>
+        </div>
+
+        <div class="legal-links" style="margin-top: 15px; font-size: 0.7em; text-align: center; opacity: 0.6;">
+          <a href="/terms.html" target="_blank" style="color: #fff; margin: 0 5px;">Terms</a> |
+          <a href="/privacy.html" target="_blank" style="color: #fff; margin: 0 5px;">Privacy</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- WAITING SCREEN -->
+    <div id="waiting-screen" class="screen hidden">
+      <h2>ROOM: <span id="lobby-code-display">??????</span></h2>
+      <div class="spinner"></div>
+      <p class="status-msg">Waiting for opponent...</p>
+    </div>
+
+    <!-- GAME SCREEN -->
+    <div id="game-screen" class="screen hidden">
+      <div class="game-container">
+        <div class="header">
+          <div class="player-card" id="p1-card">
+            <div class="avatar p1-avatar"></div>
+            <div class="info">
+              <span class="name" id="p1-name">P1</span>
+              <span class="score" id="p1-score">0</span>
+            </div>
+          </div>
+
+          <div class="vs-badge">VS</div>
+
+          <div class="player-card" id="p2-card">
+            <div class="info">
+              <span class="name" id="p2-name">P2</span>
+              <span class="score" id="p2-score">0</span>
+            </div>
+            <div class="avatar p2-avatar"></div>
+          </div>
+        </div>
+
+        <div class="board-wrapper">
+          <canvas id="gameCanvas"></canvas>
+
+          <div id="result-overlay" class="overlay hidden">
+            <h2 id="winner-text">GAME OVER</h2>
+            <button id="btn-home">BACK TO LOBBY</button>
+          </div>
+        </div>
+
+        <div class="footer">
+          <span id="status-text">Initializing...</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
