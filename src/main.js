@@ -79,18 +79,26 @@ async function init() {
   updateLobbyProfile();
 
   // Try Discord in background (Fire and forget)
-  // This will NOT block the rest of the execution
-  discord = new DiscordManager();
-  discord.init().then(() => {
-    // If success, update user
-    const discordUser = discord.getUser();
-    if (discordUser) {
-      currentUser = discordUser;
-      updateLobbyProfile();
-    }
-  }).catch(e => {
-    console.log("Discord init skipped or failed (expected locally):", e);
-  });
+  try {
+    discord = new DiscordManager();
+    discord.init().then(() => {
+      // If success, update user
+      const discordUser = discord.getUser();
+      if (discordUser) {
+        currentUser = discordUser;
+        updateLobbyProfile();
+        // Update Avatar in UI
+        const avatarEl = document.getElementById('my-avatar');
+        if (avatarEl && currentUser.avatar) {
+          avatarEl.style.backgroundImage = `url(${currentUser.avatar})`;
+        }
+      }
+    }).catch(e => {
+      console.log("Discord init skipped or failed:", e);
+      const nameEl = document.getElementById('my-username');
+      if (nameEl) nameEl.innerText += " (Guest)";
+    });
+  } catch (e) { console.warn("Discord Manager construction failed:", e); }
 }
 
 function updateLobbyProfile() {
