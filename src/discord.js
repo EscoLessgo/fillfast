@@ -39,7 +39,23 @@ export class DiscordManager {
             await this.sdk.ready();
             this.ready = true;
 
-            // 1. Authorize to get code (still good practice even if we skip token exchange for now)
+            // 0. Try Cached Token first (Avoid Rate Limits)
+            const cachedToken = sessionStorage.getItem("discord_access_token");
+            if (cachedToken) {
+                try {
+                    const auth = await this.sdk.commands.authenticate({ access_token: cachedToken });
+                    if (auth && auth.user) {
+                        this.setUser(auth.user);
+                        console.log("Discord Authenticated (Cached):", this.user.username);
+                        return;
+                    }
+                } catch (e) {
+                    console.log("Cached token invalid/expired, getting new one.");
+                    sessionStorage.removeItem("discord_access_token");
+                }
+            }
+
+            // 1. Authorize to get code
             const { code } = await this.sdk.commands.authorize({
                 client_id: CLIENT_ID,
                 response_type: "code",
@@ -69,13 +85,9 @@ export class DiscordManager {
                 throw new Error("Authentication failed, no user returned.");
             }
 
-            // 4. Success!
-            this.user = {
-                id: auth.user.id,
-                username: auth.user.global_name || auth.user.username, // Use Display Name if available
-                discriminator: auth.user.discriminator,
-                avatar: `https://cdn.discordapp.com/avatars/${auth.user.id}/${auth.user.avatar}.png`
-            };
+            // 4. Success! Save Token & User
+            sessionStorage.setItem("discord_access_token", access_token);
+            this.setUser(auth.user);
 
             console.log("Discord Authenticated to:", this.user.username);
 
@@ -88,6 +100,15 @@ export class DiscordManager {
                 discriminator: "0000"
             };
         }
+    }
+
+    setUser(discordUser) {
+        this.user = {
+            id: discordUser.id,
+            username: discordUser.global_name || discordUser.username,
+            discriminator: discordUser.discriminator,
+            avatar: `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`
+        };
     }
 
     getUser() {
