@@ -66,8 +66,9 @@ async function init() {
   window.addEventListener('resize', handleResize);
 
   // --- 2. Start Network (Game Server) ---
-  // Connect to game server immediately
-  document.getElementById('room-list').innerHTML = '<li class="empty-msg">Connecting to Server...</li>';
+  // Default State
+  document.getElementById('room-list').innerHTML = '<li class="empty-msg">Searching for rooms...</li>';
+
   network = new NetworkManager(handleNetworkEvent);
 
   // --- 3. Discord / User Setup (Non-blocking) ---
@@ -105,14 +106,18 @@ function showScreen(id) {
 
 // --- Network Events ---
 
+
 function handleNetworkEvent(type, data) {
+  console.log("Network Event:", type, data); // DEBUG LOG
+
   switch (type) {
     case 'connected':
-      // Force request room list or just wait?
-      // Usually server sends it on connect. 
-      // We can update UI to show we are online.
       document.querySelector('.logo-large h1').style.color = "#00e676"; // Green title
-      // If list is still "Connecting...", maybe server hasn't sent list yet.
+      // If list is empty, update text to show we are at least connected
+      const list = document.getElementById('room-list');
+      if (list.innerHTML.includes('Searching')) {
+        list.innerHTML = '<li class="empty-msg">No active rooms found.<br>Create one!</li>';
+      }
       break;
 
     case 'room_list':
