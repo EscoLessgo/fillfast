@@ -28,6 +28,10 @@ io.on("connection", (socket) => {
     // Send current room list to new connector
     emitRoomList(socket);
 
+    socket.on("request_room_list", () => {
+        emitRoomList(socket);
+    });
+
     socket.on("create_lobby", (userData) => {
         const roomId = Math.random().toString(36).substring(2, 6).toUpperCase();
 

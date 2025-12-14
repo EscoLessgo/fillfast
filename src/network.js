@@ -19,6 +19,7 @@ export class NetworkManager {
         this.socket.on("connect", () => {
             console.log("Connected to Game Server");
             this.onEvent("connected");
+            this.socket.emit("request_room_list");
         });
 
         this.socket.on("lobby_created", (data) => this.onEvent("lobby_created", data));
