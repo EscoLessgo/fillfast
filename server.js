@@ -15,6 +15,36 @@ const io = new Server(httpServer, {
 
 // Serve static files from 'dist' directory (Vite build)
 app.use(express.static(path.join(__dirname, "dist")));
+app.use(express.json()); // Enable JSON body parsing
+
+// Discord Token Exchange Proxy
+app.post("/api/token", async (req, res) => {
+    try {
+        const { code } = req.body;
+        if (!code) return res.status(400).json({ error: "No code provided" });
+
+        const response = await fetch("https://discord.com/api/oauth2/token", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+                client_id: process.env.VITE_DISCORD_CLIENT_ID,
+                client_secret: process.env.DISCORD_CLIENT_SECRET, // MUST SET THIS IN RAILWAY
+                grant_type: "authorization_code",
+                code: code,
+            }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            console.error("Discord Token Error:", data);
+            return res.status(500).json({ error: "Failed to fetch token", details: data });
+        }
+        res.json({ access_token: data.access_token });
+    } catch (e) {
+        console.error("Token Exchange Exception:", e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 
 // Handle SPA routing - send all other requests to index.html
 // EXCLUDE /socket.io so polling requests don't get stuck serving HTML
