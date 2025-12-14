@@ -137,12 +137,16 @@ body {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(20, 20, 20, 0.95);
+  /* Opaque background */
   padding: 20px;
   border-radius: 20px;
   backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   flex: 1;
   overflow: hidden;
+  color: #ffffff;
+  /* Force white text */
 }
 
 .user-profile {
@@ -194,8 +198,10 @@ body {
 
 .room-browser h3 {
   font-size: 0.9rem;
-  color: #888;
+  color: #ddd;
+  /* Brighter header */
   margin-bottom: 10px;
+  font-weight: bold;
 }
 
 #room-list {
