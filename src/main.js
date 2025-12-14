@@ -150,6 +150,18 @@ function handleNetworkEvent(type, data) {
       sfx.win();
       showResult(data.winner);
       break;
+
+    case 'player_left':
+      // Opponent left
+      gameOver = true;
+      document.getElementById('result-overlay').classList.remove('hidden');
+      const txt = document.getElementById('winner-text');
+      txt.innerText = "OPPONENT LEFT";
+      txt.style.color = "#fff";
+      // Update the name on the board to indicate they are gone
+      if (data.pIndex === 1) document.getElementById('p1-name').innerText = "Disconnected";
+      else document.getElementById('p2-name').innerText = "Disconnected";
+      break;
   }
 }
 

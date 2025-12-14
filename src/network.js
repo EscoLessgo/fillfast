@@ -1,12 +1,11 @@
 import { io } from "socket.io-client";
 
-// In production, this URL should be your deployed server URL.
-// For local Dev, it's localhost:3000
-// Users will need to tunnel this if running essentially "serverless" on Discord Activity Proxy,
-// but usually Discord Activities use a dedicated backend.
-// In production, this URL should be your deployed server URL.
-// IMPORTANT: For Discord Activities, this MUST be https (wss).
-const SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || "http://localhost:3001";
+// In production, the backend serves the frontend, so we connect to the same origin.
+// In local dev (Vite), we need to point to the backend port 3001.
+// 1. If VITE_GAME_SERVER_URL is set in .env (or Vercel Dashboard), use it (Cross-Origin Split).
+// 2. If not set, but in Production, assume Single-Server (Frontend served by Backend).
+// 3. Fallback to localhost for dev.
+const SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || (import.meta.env.PROD ? "/" : "http://localhost:3001");
 
 export class NetworkManager {
     constructor(onEvent) {
@@ -28,6 +27,7 @@ export class NetworkManager {
         this.socket.on("state_update", (data) => this.onEvent("state_update", data));
         this.socket.on("game_over", (data) => this.onEvent("game_over", data));
         this.socket.on("spectator_update", (data) => this.onEvent("spectator_update", data));
+        this.socket.on("player_left", (data) => this.onEvent("player_left", data));
         this.socket.on("error", (msg) => console.error("Socket Error:", msg));
     }
 

@@ -5,16 +5,27 @@ const CLIENT_ID = import.meta.env.VITE_DISCORD_CLIENT_ID || "123456789012345678"
 
 export class DiscordManager {
     constructor() {
-        this.sdk = new DiscordSDK(CLIENT_ID);
+        this.sdk = null;
+        try {
+            // Attempt to instantiate SDK. This might fail if query params are missing.
+            // We check for window.location search presence as a heuristic too.
+            if (window.location.search.includes('frame_id')) {
+                this.sdk = new DiscordSDK(CLIENT_ID);
+            }
+        } catch (e) {
+            console.warn("Discord SDK failed to construct (likely local dev):", e);
+        }
+
         this.ready = false;
         this.user = null;
     }
 
     async init() {
-        const isEmbedded = window.parent !== window;
+        // If SDK didn't construct, or we are not embedded, use Mock.
+        const isEmbedded = window.parent !== window && this.sdk;
 
         if (!isEmbedded) {
-            console.warn("Not running in Discord iframe. Creating Mock User.");
+            console.warn("Not running in Discord iframe or SDK failed. Creating Mock User.");
             this.user = {
                 id: "mock_" + Math.floor(Math.random() * 1000),
                 username: "LocalDevUser",

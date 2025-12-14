@@ -1,7 +1,24 @@
+import express from "express";
+import { createServer } from "http";
 import { Server } from "socket.io";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const io = new Server(3001, {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
     cors: { origin: "*" }
+});
+
+// Serve static files from 'dist' directory (Vite build)
+app.use(express.static(path.join(__dirname, "dist")));
+
+// Handle SPA routing - send all other requests to index.html
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
 const rooms = new Map();
@@ -43,14 +60,27 @@ io.on("connection", (socket) => {
         }
 
         if (room.players.length < 2) {
-            const newPlayer = { ...userData, socketId: socket.id, pIndex: 2, score: 0 };
+            // Determine available pIndex (1 or 2)
+            const takenIndices = room.players.map(p => p.pIndex);
+            const newPIndex = takenIndices.includes(1) ? 2 : 1;
+
+            const newPlayer = { ...userData, socketId: socket.id, pIndex: newPIndex, score: 0 };
             room.players.push(newPlayer);
             socket.join(roomId);
 
             initBoard(room);
+            // If we are filling a gap, maybe we shouldn't reset the board entirely?
+            // But for this simple game, maybe we do. 
+            // The user report implies "leaving" breaks things. 
+            // If we treat "leaving" as forfeit, then re-joining is a restart?
+            // "initBoard(room)" resets the game state. 
+            // If the user wants to *resume*, that's different.
+            // But based on "initBoard" being here, it forces a restart.
+            // If a player left, the game "ended". So restarting is fine.
+            // BUT we must make sure the OTHER player knows it restarted.
             io.to(roomId).emit("game_start", { state: room });
 
-            // Update room list (maybe show it as Full or removed?)
+            // Update room list
             broadcastRoomList();
         } else {
             // Spectator
@@ -100,20 +130,32 @@ io.on("connection", (socket) => {
     });
 
     socket.on("disconnect", () => {
-        // Basic cleanup: if host leaves, maybe close room?
-        // For now, if a room is empty, delete it.
         let changed = false;
+
         for (const [id, room] of rooms.entries()) {
+            // 1. Check Players
             const pIdx = room.players.findIndex(p => p.socketId === socket.id);
             if (pIdx !== -1) {
-                // Player left
+                const player = room.players[pIdx];
                 room.players.splice(pIdx, 1);
+
+                // Notify remaining clients in the room
+                io.to(id).emit("player_left", { pIndex: player.pIndex });
+
                 if (room.players.length === 0) {
                     rooms.delete(id);
                 }
                 changed = true;
             }
+
+            // 2. Check Spectators
+            const sIdx = room.spectators.findIndex(s => s.socketId === socket.id);
+            if (sIdx !== -1) {
+                room.spectators.splice(sIdx, 1);
+                // Optional: notify spectators count changed?
+            }
         }
+
         if (changed) broadcastRoomList();
     });
 });
@@ -167,4 +209,7 @@ function checkWin(room) {
     return taken >= total;
 }
 
-console.log("Server running on 3001...");
+const PORT = process.env.PORT || 3001;
+httpServer.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}...`);
+});
