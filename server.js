@@ -17,7 +17,8 @@ const io = new Server(httpServer, {
 app.use(express.static(path.join(__dirname, "dist")));
 
 // Handle SPA routing - send all other requests to index.html
-app.get("*", (req, res) => {
+// Using regex /.*/ to safely match all routes in both Express 4 and 5
+app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
