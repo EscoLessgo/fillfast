@@ -4,6 +4,9 @@ import { DiscordManager } from './discord.js';
 import { sfx } from './audio.js';
 
 // --- Global State ---
+const GAME_VERSION = "v1.0.5 (Live)";
+console.log(`Starting Game Client ${GAME_VERSION}`);
+
 let network;
 let discord;
 let currentUser = null;
@@ -469,6 +472,13 @@ function drawLine(x1, y1, x2, y2, owner, type, r, c) {
   ctx.lineTo(x2, y2);
   ctx.stroke();
   ctx.shadowBlur = 0;
+}
+
+
+// Version Display
+const footer = document.querySelector('footer p');
+if (footer) {
+  footer.innerHTML += ` <span style="opacity:0.5; font-size: 0.8em">(${GAME_VERSION})</span>`;
 }
 
 init();
