@@ -13,7 +13,7 @@
     "start": "node server.js"
   },
   "devDependencies": {
-    "vite": "^7.2.4"
+    "vite": "^5.4.11"
   },
   "dependencies": {
     "@discord/embedded-app-sdk": "^2.4.0",
