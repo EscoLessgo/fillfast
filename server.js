@@ -13,6 +13,20 @@ const io = new Server(httpServer, {
     cors: { origin: "*" }
 });
 
+// Security Headers (Allow Fonts & Discord Images)
+app.use((req, res, next) => {
+    res.setHeader(
+        "Content-Security-Policy",
+        "default-src 'self'; " +
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; " +
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+        "font-src 'self' https://fonts.gstatic.com; " +
+        "img-src 'self' data: https://cdn.discordapp.com https://*.discordapp.com http://localhost:*; " +
+        "connect-src 'self' wss: https: http:;"
+    );
+    next();
+});
+
 // Serve static files from 'dist' directory (Vite build)
 app.use(express.static(path.join(__dirname, "dist")));
 app.use(express.json()); // Enable JSON body parsing
