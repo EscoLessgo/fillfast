@@ -115,6 +115,10 @@ body {
 
 .hidden {
   display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  z-index: -9999;
 }
 
 /* LOBBY STYLES */

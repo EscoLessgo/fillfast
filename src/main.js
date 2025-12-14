@@ -480,10 +480,12 @@ function drawLine(x1, y1, x2, y2, owner, type, r, c) {
 }
 
 
-// Version Display
-const footer = document.querySelector('footer p');
-if (footer) {
-  footer.innerHTML += ` <span style="opacity:0.5; font-size: 0.8em">(${GAME_VERSION})</span>`;
+// Force Clean State on Init
+function forceResetScreens() {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById('lobby-screen').classList.remove('hidden');
+  document.getElementById('result-overlay').classList.add('hidden');
 }
 
+forceResetScreens();
 init();
