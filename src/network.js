@@ -2,10 +2,10 @@ import { io } from "socket.io-client";
 
 // In production, the backend serves the frontend, so we connect to the same origin.
 // In local dev (Vite), we need to point to the backend port 3001.
-// 1. If VITE_GAME_SERVER_URL is set in .env (or Vercel Dashboard), use it (Cross-Origin Split).
-// 2. If not set, but in Production, assume Single-Server (Frontend served by Backend).
-// 3. Fallback to localhost for dev.
-const SERVER_URL = import.meta.env.VITE_GAME_SERVER_URL || (import.meta.env.PROD ? "/" : "http://localhost:3001");
+// Use runtime detection to determine if we are local or in production.
+// This is more robust than build-time variables for this specific setup.
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const SERVER_URL = isLocal ? "http://localhost:3001" : undefined;
 
 export class NetworkManager {
     constructor(onEvent) {
