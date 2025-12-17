@@ -345,8 +345,13 @@ body {
   position: relative;
   background: var(--card-bg);
   border-radius: 20px;
-  padding: 20px;
+  /* padding: 20px; REMOVED to prevent resize loop */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden; /* Ensure no accidental overflow */
+}
+
+canvas {
+  display: block; /* Prevents baseline offset issues */
 }
 
 .overlay {
